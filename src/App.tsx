@@ -1,5 +1,5 @@
 // 🔵 John - App Principal - Biblioteca Virtual
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { AppProvider } from './context/AppContext';
@@ -18,15 +18,14 @@ function App() {
     return hash;
   });
 
-  // Escuchar cambios en el hash
-  useState(() => {
+  useEffect(() => {
     const handleHashChange = () => {
       setCurrentPage(window.location.hash.slice(1) || '/');
     };
 
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
-  });
+  }, []);
 
   // Renderizar página actual
   const renderPage = () => {

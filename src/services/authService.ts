@@ -1,77 +1,132 @@
-// 🟡 Jefferson - Servicio de autenticación
-import { apiService } from './api';
-import type { AuthUser, User } from '../types/user.types';
+// 🟡 Jefferson - Servicio de autenticación (Local Storage + adapter de UI)
+import { dataService } from './dataService';
+import { userService } from './userService';
 import { STORAGE_KEYS } from '../config/constants';
+import type { Usuario } from '../types/app.types';
+import type {
+  AuthUser,
+  LoginCredentials,
+  RegisterData,
+  SesionUsuario,
+  UiLoginCredentials,
+  User,
+} from '../types/user.types';
+import type { ServiceResponse } from '../types/api.types';
 
-interface LoginCredentials {
-  email: string;
-  password: string;
-}
+const toUser = (usuario: Usuario): User => ({
+  id: usuario.id,
+  name: `${usuario.nombres} ${usuario.apellidos}`.trim(),
+  email: usuario.correo,
+  role: usuario.rol === 'admin' ? 'admin' : 'user',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+});
 
-interface RegisterData {
-  name: string;
-  email: string;
-  password: string;
-}
+const saveSesion = (usuario: Usuario) => {
+  const sesion: SesionUsuario = { usuario, isAuthenticated: true };
+  localStorage.setItem(STORAGE_KEYS.SESION, JSON.stringify(sesion));
+  localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(toUser(usuario)));
+  localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, `local-${usuario.id}`);
+};
 
-export class AuthService {
-  async login(credentials: LoginCredentials): Promise<AuthUser> {
-    const authUser = await apiService.post<AuthUser>('/auth/login', credentials);
-    this.saveAuthData(authUser);
-    return authUser;
-  }
+const clearSesion = () => {
+  localStorage.removeItem(STORAGE_KEYS.SESION);
+  localStorage.removeItem(STORAGE_KEYS.USER_DATA);
+  localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+  localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+};
 
-  async register(data: RegisterData): Promise<AuthUser> {
-    const authUser = await apiService.post<AuthUser>('/auth/register', data);
-    this.saveAuthData(authUser);
-    return authUser;
-  }
+const toAuthUser = (usuario: Usuario): AuthUser => ({
+  user: toUser(usuario),
+  token: `local-${usuario.id}`,
+  refreshToken: `refresh-${usuario.id}`,
+});
+
+export const authService = {
+  loginWithCodigo({ codigo, correo }: LoginCredentials): ServiceResponse<Usuario> {
+    const user = userService.getByCodigo(codigo);
+    if (!user) return { success: false, error: 'Usuario no encontrado' };
+    if (user.correo !== correo) return { success: false, error: 'Credenciales inválidas' };
+
+    saveSesion(user);
+    return { success: true, data: user };
+  },
+
+  async login({ email, password }: UiLoginCredentials): Promise<AuthUser> {
+    const user =
+      userService.getByCorreo(email) ?? userService.getByCodigo(password);
+
+    if (!user) {
+      throw new Error('Usuario no encontrado');
+    }
+
+    const correoOk = user.correo.toLowerCase() === email.toLowerCase();
+    const codigoOk = user.codigo === password;
+    if (!correoOk && !codigoOk) {
+      throw new Error('Credenciales inválidas');
+    }
+
+    saveSesion(user);
+    return toAuthUser(user);
+  },
+
+  async register({ name, email, password }: RegisterData): Promise<AuthUser> {
+    const partes = name.trim().split(/\s+/);
+    const nombres = partes[0] || 'Usuario';
+    const apellidos = partes.slice(1).join(' ') || 'Biblioteca';
+
+    const created = userService.create({
+      nombres,
+      apellidos,
+      codigo: password,
+      correo: email,
+      tipo: 'Estudiante',
+      rol: 'usuario',
+    });
+
+    if (!created.success || !created.data) {
+      throw new Error(created.error || 'No se pudo registrar el usuario');
+    }
+
+    saveSesion(created.data);
+    return toAuthUser(created.data);
+  },
 
   async logout(): Promise<void> {
-    try {
-      await apiService.post('/auth/logout', {});
-    } finally {
-      this.clearAuthData();
-    }
-  }
+    clearSesion();
+  },
 
-  async getCurrentUser(): Promise<User | null> {
+  getSesion(): SesionUsuario {
     try {
-      return await apiService.get<User>('/auth/me');
+      const raw = localStorage.getItem(STORAGE_KEYS.SESION);
+      if (!raw) return { usuario: null, isAuthenticated: false };
+      return JSON.parse(raw) as SesionUsuario;
+    } catch {
+      return { usuario: null, isAuthenticated: false };
+    }
+  },
+
+  getStoredUser(): User | null {
+    const sesion = this.getSesion();
+    if (sesion.usuario) return toUser(sesion.usuario);
+
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.USER_DATA);
+      return raw ? (JSON.parse(raw) as User) : null;
     } catch {
       return null;
     }
-  }
+  },
 
-  async refreshToken(): Promise<string> {
-    const refreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
-    const response = await apiService.post<{ token: string }>('/auth/refresh', {
-      refreshToken,
-    });
-    localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, response.token);
-    return response.token;
-  }
-
-  private saveAuthData(authUser: AuthUser): void {
-    localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, authUser.token);
-    localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, authUser.refreshToken);
-    localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(authUser.user));
-  }
-
-  private clearAuthData(): void {
-    localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
-    localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
-    localStorage.removeItem(STORAGE_KEYS.USER_DATA);
-  }
-
-  getStoredUser(): User | null {
-    const userData = localStorage.getItem(STORAGE_KEYS.USER_DATA);
-    return userData ? JSON.parse(userData) : null;
-  }
+  isAdmin(): boolean {
+    return this.getSesion().usuario?.rol === 'admin';
+  },
 
   isAuthenticated(): boolean {
-    return !!localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
-  }
-}
+    return this.getSesion().isAuthenticated;
+  },
 
-export const authService = new AuthService();
+  generateGuestId(): string {
+    return dataService.generateId('G-');
+  },
+};

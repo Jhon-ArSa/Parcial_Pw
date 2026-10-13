@@ -1,4 +1,6 @@
 // 🟡 Jefferson - Tipos de Usuario
+import type { Usuario, TipoUsuario, RolUsuario } from './app.types';
+
 export interface User {
   id: string;
   name: string;
@@ -27,4 +29,34 @@ export interface AuthUser {
   user: User;
   token: string;
   refreshToken: string;
+}
+
+export interface UsuarioFormData {
+  nombres: string;
+  apellidos: string;
+  codigo: string;
+  correo: string;
+  tipo: TipoUsuario;
+  rol?: RolUsuario;
+}
+
+export interface SesionUsuario {
+  usuario: Usuario | null;
+  isAuthenticated: boolean;
+}
+
+export interface LoginCredentials {
+  codigo: string;
+  correo: string;
+}
+
+export interface UiLoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
 }

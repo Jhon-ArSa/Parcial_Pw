@@ -1,4 +1,5 @@
 // 🟡 Jefferson - Tipos generales de la aplicación
+
 export interface AppState {
   isLoading: boolean;
   error: string | null;
@@ -26,4 +27,42 @@ export interface FormField {
   value: string | number | boolean;
   error?: string;
   touched?: boolean;
+}
+
+export type TipoUsuario = 'Estudiante' | 'Docente';
+export type RolUsuario = 'admin' | 'usuario';
+export type EstadoPrestamo = 'Activo' | 'Devuelto';
+
+export interface Categoria {
+  id: string;
+  nombre: string;
+}
+
+export interface Libro {
+  id: string;
+  titulo: string;
+  autor: string;
+  isbn: string;
+  categoriaId: string;
+  stock: number;
+}
+
+export interface Usuario {
+  id: string;
+  nombres: string;
+  apellidos: string;
+  codigo: string;
+  correo: string;
+  tipo: TipoUsuario;
+  rol: RolUsuario;
+}
+
+export interface Prestamo {
+  id: string;
+  usuarioId: string;
+  libroId: string;
+  fechaPrestamo: string;
+  fechaLimite: string;
+  fechaDevolucion?: string;
+  estado: EstadoPrestamo;
 }

@@ -1,38 +1,61 @@
-// 🟡 Jefferson - Servicio de datos genérico
-import { apiService } from './api';
-import type { PaginatedResponse } from '../types/api.types';
+// 🟡 Jefferson - Servicio de datos genérico (Local Storage)
+import type { ServiceResponse } from '../types/api.types';
 
-export class DataService<T> {
-  private endpoint: string;
-
-  constructor(endpoint: string) {
-    this.endpoint = endpoint;
-  }
-
-  async getAll(page?: number, pageSize?: number): Promise<T[] | PaginatedResponse<T>> {
-    if (page !== undefined && pageSize !== undefined) {
-      return apiService.getPaginated<T>(this.endpoint, page, pageSize);
+export const dataService = {
+  getAll<T>(key: string): T[] {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? (JSON.parse(raw) as T[]) : [];
+    } catch {
+      return [];
     }
-    return apiService.get<T[]>(this.endpoint);
-  }
+  },
 
-  async getById(id: string | number): Promise<T> {
-    return apiService.get<T>(`${this.endpoint}/${id}`);
-  }
+  saveAll<T>(key: string, items: T[]): ServiceResponse<T[]> {
+    try {
+      localStorage.setItem(key, JSON.stringify(items));
+      return { success: true, data: items };
+    } catch {
+      return { success: false, error: 'Error al guardar en Local Storage' };
+    }
+  },
 
-  async create(data: Partial<T>): Promise<T> {
-    return apiService.post<T>(this.endpoint, data);
-  }
+  create<T extends { id: string }>(key: string, item: T): ServiceResponse<T> {
+    const items = this.getAll<T>(key);
+    if (items.some((i) => i.id === item.id)) {
+      return { success: false, error: 'ID duplicado' };
+    }
+    const updated = [...items, item];
+    this.saveAll(key, updated);
+    return { success: true, data: item };
+  },
 
-  async update(id: string | number, data: Partial<T>): Promise<T> {
-    return apiService.put<T>(`${this.endpoint}/${id}`, data);
-  }
+  update<T extends { id: string }>(key: string, item: T): ServiceResponse<T> {
+    const items = this.getAll<T>(key);
+    const idx = items.findIndex((i) => i.id === item.id);
+    if (idx === -1) return { success: false, error: 'Registro no encontrado' };
+    items[idx] = item;
+    this.saveAll(key, items);
+    return { success: true, data: item };
+  },
 
-  async delete(id: string | number): Promise<void> {
-    return apiService.delete<void>(`${this.endpoint}/${id}`);
-  }
-}
+  remove<T extends { id: string }>(key: string, id: string): ServiceResponse<string> {
+    const items = this.getAll<T>(key);
+    const filtered = items.filter((i) => i.id !== id);
+    if (filtered.length === items.length) {
+      return { success: false, error: 'Registro no encontrado' };
+    }
+    this.saveAll(key, filtered);
+    return { success: true, data: id };
+  },
 
-// Ejemplo de uso:
-// const productService = new DataService<Product>('/products');
-// const categoryService = new DataService<Category>('/categories');
+  getById<T extends { id: string }>(key: string, id: string): T | null {
+    return this.getAll<T>(key).find((i) => i.id === id) ?? null;
+  },
+
+  generateId(prefix = ''): string {
+    const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const time = Date.now().toString(36).toUpperCase();
+    return `${prefix}${time}${random}`;
+  },
+};

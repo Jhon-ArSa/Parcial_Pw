@@ -10,7 +10,6 @@ const axiosInstance: AxiosInstance = axios.create({
   },
 });
 
-// Interceptor de peticiones
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
@@ -19,24 +18,16 @@ axiosInstance.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Interceptor de respuestas
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error) => {
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
-    // Manejo de token expirado
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      // TODO: Implementar refresh token
-      // const newToken = await refreshToken();
-      // originalRequest.headers.Authorization = `Bearer ${newToken}`;
-      // return axiosInstance(originalRequest);
     }
 
     return Promise.reject(error);
@@ -44,3 +35,4 @@ axiosInstance.interceptors.response.use(
 );
 
 export default axiosInstance;
+export const apiClient = axiosInstance;

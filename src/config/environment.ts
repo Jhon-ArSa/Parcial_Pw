@@ -1,15 +1,7 @@
 // 🟡 Jefferson - Configuración de entorno
 export const ENV = {
-  MODE: import.meta.env.MODE,
-  DEV: import.meta.env.DEV,
-  PROD: import.meta.env.PROD,
-  API_URL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
-  API_KEY: import.meta.env.VITE_API_KEY || '',
+  APP_NAME: "Biblioteca Universitaria",
+  VERSION: "1.0.0",
+  USE_LOCAL_STORAGE: true,
+  API_URL: "",
 } as const;
-
-export const isDevelopment = ENV.MODE === 'development';
-export const isProduction = ENV.MODE === 'production';
-
-export const getEnvVar = (key: string, defaultValue: string = ''): string => {
-  return import.meta.env[key] || defaultValue;
-};

@@ -4,12 +4,8 @@ import type { ApiError } from '../types/api.types';
 export class AppError extends Error {
   code?: string;
   statusCode?: number;
-  
-  constructor(
-    message: string,
-    code?: string,
-    statusCode?: number
-  ) {
+
+  constructor(message: string, code?: string, statusCode?: number) {
     super(message);
     this.name = 'AppError';
     this.code = code;
@@ -42,5 +38,14 @@ export const logError = (error: unknown, context?: string): void => {
   if (import.meta.env.DEV) {
     console.error(`[Error ${context ? `- ${context}` : ''}]:`, error);
   }
-  // TODO: Integrar con servicio de logging (Sentry, LogRocket, etc.)
+};
+
+export const handleError = (error: unknown): string => {
+  if (error instanceof AppError) return error.message;
+  if (error instanceof Error) return error.message;
+  return 'Error desconocido';
+};
+
+export const throwIf = (condition: boolean, message: string) => {
+  if (condition) throw new AppError(message);
 };

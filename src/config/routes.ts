@@ -2,6 +2,9 @@
 import type { NavigationItem } from '../types/app.types';
 import { ROUTES } from './constants';
 
+export { ROUTES };
+export type AppRoute = (typeof ROUTES)[keyof typeof ROUTES];
+
 export const navigationItems: NavigationItem[] = [
   {
     id: 'home',

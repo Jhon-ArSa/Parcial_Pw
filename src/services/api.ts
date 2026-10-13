@@ -1,4 +1,4 @@
-// 🟡 Jefferson - Servicio base de API
+// 🟡 Jefferson - Servicio base de API + reexport de servicios locales
 import axiosInstance from '../lib/axios';
 import type { ApiResponse, PaginatedResponse } from '../types/api.types';
 import { handleApiError, logError } from '../lib/errorHandler';
@@ -62,3 +62,10 @@ export class ApiService {
 }
 
 export const apiService = new ApiService();
+
+export { dataService } from './dataService';
+export { userService } from './userService';
+export { authService } from './authService';
+export { categoriaService } from './categoriaService';
+export { libroService } from './libroService';
+export { prestamoService } from './prestamoService';

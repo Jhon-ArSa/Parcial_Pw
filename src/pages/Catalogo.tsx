@@ -1,104 +1,67 @@
 // 🔵 John - Página Catálogo de Libros
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { Input } from '../components/common/Input';
+import { categoriaService } from '../services/categoriaService';
+import { libroService } from '../services/libroService';
+import { prestamoService } from '../services/prestamoService';
+import { authService } from '../services/authService';
+import { userService } from '../services/userService';
 import './Catalogo.css';
 
-interface Book {
-  id: number;
-  title: string;
-  author: string;
-  category: string;
-  year: number;
-  available: boolean;
-  cover: string;
-}
+const covers = ['📕', '📗', '📘', '📙'];
 
 export const Catalogo = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [tick, setTick] = useState(0);
 
-  // Datos de ejemplo - en producción vendrían de Jefferson's API
-  const books: Book[] = [
-    {
-      id: 1,
-      title: 'Cien Años de Soledad',
-      author: 'Gabriel García Márquez',
-      category: 'Ficción',
-      year: 1967,
-      available: true,
-      cover: '📕'
-    },
-    {
-      id: 2,
-      title: 'Don Quijote de la Mancha',
-      author: 'Miguel de Cervantes',
-      category: 'Clásicos',
-      year: 1605,
-      available: true,
-      cover: '📗'
-    },
-    {
-      id: 3,
-      title: 'El Principito',
-      author: 'Antoine de Saint-Exupéry',
-      category: 'Infantil',
-      year: 1943,
-      available: false,
-      cover: '📘'
-    },
-    {
-      id: 4,
-      title: '1984',
-      author: 'George Orwell',
-      category: 'Ciencia Ficción',
-      year: 1949,
-      available: true,
-      cover: '📙'
-    },
-    {
-      id: 5,
-      title: 'Orgullo y Prejuicio',
-      author: 'Jane Austen',
-      category: 'Romance',
-      year: 1813,
-      available: true,
-      cover: '📕'
-    },
-    {
-      id: 6,
-      title: 'Sapiens',
-      author: 'Yuval Noah Harari',
-      category: 'No Ficción',
-      year: 2011,
-      available: false,
-      cover: '📗'
-    },
-  ];
+  const categorias = categoriaService.getAll();
+  const libros = libroService.getAll();
 
-  const categories = ['all', 'Ficción', 'Clásicos', 'Infantil', 'Ciencia Ficción', 'Romance', 'No Ficción'];
+  const filteredBooks = useMemo(() => {
+    return libroService.buscar(searchTerm, selectedCategory === 'all' ? undefined : selectedCategory);
+  }, [searchTerm, selectedCategory, tick]);
 
-  const filteredBooks = books.filter(book => {
-    const matchesSearch = book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         book.author.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || book.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const nombreCategoria = (id: string) =>
+    categorias.find((c) => c.id === id)?.nombre ?? 'Sin categoría';
 
-  const handleBorrow = (bookId: number) => {
-    alert(`Solicitando préstamo del libro ID: ${bookId}`);
-    // Aquí se conectaría con el servicio de Gabriel/Jefferson
+  const ensureUsuario = () => {
+    const sesion = authService.getSesion();
+    if (sesion.usuario) return sesion.usuario;
+
+    const demo = userService.getByCorreo('juan@unh.edu.pe');
+    if (!demo) {
+      alert('No hay un usuario de prueba. Recarga la página para inicializar datos.');
+      return null;
+    }
+    authService.loginWithCodigo({ codigo: demo.codigo, correo: demo.correo });
+    return demo;
+  };
+
+  const handleBorrow = (libroId: string) => {
+    const usuario = ensureUsuario();
+    if (!usuario) return;
+
+    const resultado = prestamoService.solicitar(usuario.id, libroId);
+    if (!resultado.success) {
+      alert(resultado.error ?? 'No se pudo solicitar el préstamo');
+      return;
+    }
+    alert(`Préstamo registrado. Código: ${resultado.data?.id}`);
+    setTick((n) => n + 1);
   };
 
   return (
     <div className="catalogo-page fade-in">
       <div className="catalogo-header">
         <h1>📚 Catálogo de Libros</h1>
-        <p className="catalogo-subtitle">Explora nuestra colección de {books.length} libros disponibles</p>
+        <p className="catalogo-subtitle">
+          Explora nuestra colección de {libros.length} libros disponibles
+        </p>
       </div>
 
-      {/* Barra de búsqueda y filtros */}
       <div className="search-filter-section">
         <div className="search-box">
           <Input
@@ -111,38 +74,42 @@ export const Catalogo = () => {
         </div>
 
         <div className="category-filters">
-          {categories.map((category) => (
+          <button
+            className={`filter-btn ${selectedCategory === 'all' ? 'active' : ''}`}
+            onClick={() => setSelectedCategory('all')}
+          >
+            Todas
+          </button>
+          {categorias.map((category) => (
             <button
-              key={category}
-              className={`filter-btn ${selectedCategory === category ? 'active' : ''}`}
-              onClick={() => setSelectedCategory(category)}
+              key={category.id}
+              className={`filter-btn ${selectedCategory === category.id ? 'active' : ''}`}
+              onClick={() => setSelectedCategory(category.id)}
             >
-              {category === 'all' ? 'Todas' : category}
+              {category.nombre}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Resultados */}
       <div className="results-info">
-        Mostrando {filteredBooks.length} de {books.length} libros
+        Mostrando {filteredBooks.length} de {libros.length} libros
       </div>
 
-      {/* Grid de libros */}
       <div className="books-grid">
-        {filteredBooks.map((book) => (
+        {filteredBooks.map((book, index) => (
           <Card key={book.id} variant="elevated" hoverable>
             <Card.Body>
-              <div className="book-cover">{book.cover}</div>
-              <h3 className="book-title">{book.title}</h3>
-              <p className="book-author">Por {book.author}</p>
+              <div className="book-cover">{covers[index % covers.length]}</div>
+              <h3 className="book-title">{book.titulo}</h3>
+              <p className="book-author">Por {book.autor}</p>
               <div className="book-meta">
-                <span className="book-category">{book.category}</span>
-                <span className="book-year">{book.year}</span>
+                <span className="book-category">{nombreCategoria(book.categoriaId)}</span>
+                <span className="book-year">ISBN {book.isbn}</span>
               </div>
               <div className="book-status">
-                {book.available ? (
-                  <span className="status-badge available">✓ Disponible</span>
+                {book.stock > 0 ? (
+                  <span className="status-badge available">✓ Disponible ({book.stock})</span>
                 ) : (
                   <span className="status-badge unavailable">✗ Prestado</span>
                 )}
@@ -150,12 +117,12 @@ export const Catalogo = () => {
             </Card.Body>
             <Card.Footer>
               <Button
-                variant={book.available ? 'primary' : 'secondary'}
+                variant={book.stock > 0 ? 'primary' : 'secondary'}
                 fullWidth
-                disabled={!book.available}
+                disabled={book.stock <= 0}
                 onClick={() => handleBorrow(book.id)}
               >
-                {book.available ? 'Solicitar Préstamo' : 'No Disponible'}
+                {book.stock > 0 ? 'Solicitar Préstamo' : 'No Disponible'}
               </Button>
             </Card.Footer>
           </Card>
@@ -165,7 +132,13 @@ export const Catalogo = () => {
       {filteredBooks.length === 0 && (
         <div className="no-results">
           <p>No se encontraron libros que coincidan con tu búsqueda</p>
-          <Button variant="outline" onClick={() => { setSearchTerm(''); setSelectedCategory('all'); }}>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setSearchTerm('');
+              setSelectedCategory('all');
+            }}
+          >
             Limpiar filtros
           </Button>
         </div>
