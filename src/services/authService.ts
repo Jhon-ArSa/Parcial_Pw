@@ -1,77 +1,38 @@
 // 🟡 Jefferson - Servicio de autenticación
-import { apiService } from './api';
-import { AuthUser, User } from '../types/user.types';
-import { STORAGE_KEYS } from '../config/constants';
+import { dataService } from "./dataService";
+import { userService } from "./userService";
+import { STORAGE_KEYS } from "../config/constants";
+import type { Usuario } from "../types/app.types";
+import type { LoginCredentials, SesionUsuario } from "../types/user.types";
+import type { ServiceResponse } from "../types/api.types";
 
-interface LoginCredentials {
-  email: string;
-  password: string;
-}
+export const authService = {
+  login({ codigo, correo }: LoginCredentials): ServiceResponse<Usuario> {
+    const user = userService.getByCodigo(codigo);
+    if (!user) return { success: false, error: "Usuario no encontrado" };
+    if (user.correo !== correo)
+      return { success: false, error: "Credenciales inválidas" };
 
-interface RegisterData {
-  name: string;
-  email: string;
-  password: string;
-}
+    const sesion: SesionUsuario = { usuario: user, isAuthenticated: true };
+    localStorage.setItem(STORAGE_KEYS.SESION, JSON.stringify(sesion));
+    return { success: true, data: user };
+  },
 
-export class AuthService {
-  async login(credentials: LoginCredentials): Promise<AuthUser> {
-    const authUser = await apiService.post<AuthUser>('/auth/login', credentials);
-    this.saveAuthData(authUser);
-    return authUser;
-  }
+  logout(): void {
+    localStorage.removeItem(STORAGE_KEYS.SESION);
+  },
 
-  async register(data: RegisterData): Promise<AuthUser> {
-    const authUser = await apiService.post<AuthUser>('/auth/register', data);
-    this.saveAuthData(authUser);
-    return authUser;
-  }
-
-  async logout(): Promise<void> {
+  getSesion(): SesionUsuario {
     try {
-      await apiService.post('/auth/logout', {});
-    } finally {
-      this.clearAuthData();
-    }
-  }
-
-  async getCurrentUser(): Promise<User | null> {
-    try {
-      return await apiService.get<User>('/auth/me');
+      const raw = localStorage.getItem(STORAGE_KEYS.SESION);
+      if (!raw) return { usuario: null, isAuthenticated: false };
+      return JSON.parse(raw) as SesionUsuario;
     } catch {
-      return null;
+      return { usuario: null, isAuthenticated: false };
     }
-  }
+  },
 
-  async refreshToken(): Promise<string> {
-    const refreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
-    const response = await apiService.post<{ token: string }>('/auth/refresh', {
-      refreshToken,
-    });
-    localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, response.token);
-    return response.token;
-  }
-
-  private saveAuthData(authUser: AuthUser): void {
-    localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, authUser.token);
-    localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, authUser.refreshToken);
-    localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(authUser.user));
-  }
-
-  private clearAuthData(): void {
-    localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
-    localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
-    localStorage.removeItem(STORAGE_KEYS.USER_DATA);
-  }
-
-  getStoredUser(): User | null {
-    const userData = localStorage.getItem(STORAGE_KEYS.USER_DATA);
-    return userData ? JSON.parse(userData) : null;
-  }
-
-  isAuthenticated(): boolean {
-    return !!localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
-  }
-}
-
-export const authService = new AuthService();
+  isAdmin(): boolean {
+    return this.getSesion().usuario?.rol === "admin";
+  },
+};

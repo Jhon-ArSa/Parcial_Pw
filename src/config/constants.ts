@@ -1,33 +1,35 @@
-// 🟡 Jefferson - Constantes de la aplicación
-export const APP_NAME = 'Parcial App';
-export const APP_VERSION = '1.0.0';
+// 🟡 Jefferson
+import type { StorageKeys } from "../types/api.types";
 
-export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
-  TIMEOUT: 30000,
-  RETRY_ATTEMPTS: 3,
+export const STORAGE_KEYS: StorageKeys = {
+  CATEGORIAS: "biblioteca_categorias",
+  LIBROS: "biblioteca_libros",
+  USUARIOS: "biblioteca_usuarios",
+  PRESTAMOS: "biblioteca_prestamos",
+  SESION: "biblioteca_sesion",
 };
 
-export const STORAGE_KEYS = {
-  AUTH_TOKEN: 'auth_token',
-  REFRESH_TOKEN: 'refresh_token',
-  USER_DATA: 'user_data',
-  THEME: 'theme',
-  LANGUAGE: 'language',
+export const DIAS_PRESTAMO = 7;
+
+export const TIPOS_USUARIO = ["Estudiante", "Docente"] as const;
+
+export const ROLES = {
+  ADMIN: "admin",
+  USUARIO: "usuario",
 } as const;
 
-export const ROUTES = {
-  HOME: '/',
-  ABOUT: '/about',
-  DASHBOARD: '/dashboard',
-  LOGIN: '/login',
-  REGISTER: '/register',
-  NOT_FOUND: '*',
+export const ESTADOS_PRESTAMO = {
+  ACTIVO: "Activo",
+  DEVUELTO: "Devuelto",
 } as const;
 
-export const VALIDATION_RULES = {
-  EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-  PASSWORD_MIN_LENGTH: 8,
-  USERNAME_MIN_LENGTH: 3,
-  PHONE_REGEX: /^\+?[1-9]\d{1,14}$/,
-};
+export const MENSAJES = {
+  CODIGO_DUPLICADO: "El código universitario ya está registrado",
+  CORREO_DUPLICADO: "El correo electrónico ya está registrado",
+  STOCK_AGOTADO: "No hay stock disponible para este libro",
+  CAMPOS_REQUERIDOS: "Todos los campos son obligatorios",
+  NO_ENCONTRADO: "Registro no encontrado",
+  CREADO: "Registro creado correctamente",
+  ACTUALIZADO: "Registro actualizado correctamente",
+  ELIMINADO: "Registro eliminado correctamente",
+} as const;

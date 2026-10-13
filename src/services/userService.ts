@@ -1,35 +1,68 @@
 // 🟡 Jefferson - Servicio de usuarios
-import { apiService } from './api';
-import { User, UserProfile } from '../types/user.types';
-import { PaginatedResponse } from '../types/api.types';
+import { dataService } from "./dataService";
+import { STORAGE_KEYS, MENSAJES } from "../config/constants";
+import type { Usuario } from "../types/app.types";
+import type { UsuarioFormData } from "../types/user.types";
+import type { ServiceResponse } from "../types/api.types";
 
-export class UserService {
-  async getUsers(page: number = 1, pageSize: number = 10): Promise<PaginatedResponse<User>> {
-    return apiService.getPaginated<User>('/users', page, pageSize);
-  }
+export const userService = {
+  getAll(): Usuario[] {
+    return dataService.getAll<Usuario>(STORAGE_KEYS.USUARIOS);
+  },
 
-  async getUserById(id: string): Promise<User> {
-    return apiService.get<User>(`/users/${id}`);
-  }
+  getById(id: string): Usuario | null {
+    return dataService.getById<Usuario>(STORAGE_KEYS.USUARIOS, id);
+  },
 
-  async updateUser(id: string, data: Partial<UserProfile>): Promise<User> {
-    return apiService.put<User>(`/users/${id}`, data);
-  }
+  getByCodigo(codigo: string): Usuario | null {
+    return this.getAll().find((u) => u.codigo === codigo) ?? null;
+  },
 
-  async deleteUser(id: string): Promise<void> {
-    return apiService.delete<void>(`/users/${id}`);
-  }
+  getByCorreo(correo: string): Usuario | null {
+    return this.getAll().find((u) => u.correo === correo) ?? null;
+  },
 
-  async updateProfile(data: Partial<UserProfile>): Promise<User> {
-    return apiService.put<User>('/users/profile', data);
-  }
+  create(data: UsuarioFormData): ServiceResponse<Usuario> {
+    if (this.getByCodigo(data.codigo)) {
+      return { success: false, error: MENSAJES.CODIGO_DUPLICADO };
+    }
+    if (this.getByCorreo(data.correo)) {
+      return { success: false, error: MENSAJES.CORREO_DUPLICADO };
+    }
+    const nuevo: Usuario = {
+      id: dataService.generateId("U-"),
+      nombres: data.nombres,
+      apellidos: data.apellidos,
+      codigo: data.codigo,
+      correo: data.correo,
+      tipo: data.tipo,
+      rol: data.rol ?? "usuario",
+    };
+    return dataService.create<Usuario>(STORAGE_KEYS.USUARIOS, nuevo);
+  },
 
-  async changePassword(oldPassword: string, newPassword: string): Promise<void> {
-    return apiService.post<void>('/users/change-password', {
-      oldPassword,
-      newPassword,
-    });
-  }
-}
+  update(id: string, data: UsuarioFormData): ServiceResponse<Usuario> {
+    const actual = this.getById(id);
+    if (!actual) return { success: false, error: MENSAJES.NO_ENCONTRADO };
 
-export const userService = new UserService();
+    const dupCodigo = this.getByCodigo(data.codigo);
+    if (dupCodigo && dupCodigo.id !== id) {
+      return { success: false, error: MENSAJES.CODIGO_DUPLICADO };
+    }
+    const dupCorreo = this.getByCorreo(data.correo);
+    if (dupCorreo && dupCorreo.id !== id) {
+      return { success: false, error: MENSAJES.CORREO_DUPLICADO };
+    }
+
+    const actualizado: Usuario = {
+      ...actual,
+      ...data,
+      rol: data.rol ?? actual.rol,
+    };
+    return dataService.update<Usuario>(STORAGE_KEYS.USUARIOS, actualizado);
+  },
+
+  remove(id: string): ServiceResponse<string> {
+    return dataService.remove<Usuario>(STORAGE_KEYS.USUARIOS, id);
+  },
+};

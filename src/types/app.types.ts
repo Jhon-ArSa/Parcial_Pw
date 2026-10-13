@@ -1,27 +1,40 @@
-// 🟡 Jefferson - Tipos generales de la aplicación
-export interface AppState {
-  isLoading: boolean;
-  error: string | null;
-  theme: Theme;
-}
+// 🟡 Jefferson
+// src/types/app.types.ts
 
-export enum Theme {
-  LIGHT = 'light',
-  DARK = 'dark',
-  AUTO = 'auto',
-}
+export type TipoUsuario = "Estudiante" | "Docente";
+export type RolUsuario = "admin" | "usuario";
+export type EstadoPrestamo = "Activo" | "Devuelto";
 
-export interface NavigationItem {
+export interface Categoria {
   id: string;
-  label: string;
-  path: string;
-  icon?: string;
-  children?: NavigationItem[];
+  nombre: string;
 }
 
-export interface FormField {
-  name: string;
-  value: string | number | boolean;
-  error?: string;
-  touched?: boolean;
+export interface Libro {
+  id: string;
+  titulo: string;
+  autor: string;
+  isbn: string;
+  categoriaId: string;
+  stock: number;
+}
+
+export interface Usuario {
+  id: string;
+  nombres: string;
+  apellidos: string;
+  codigo: string; // único
+  correo: string;
+  tipo: TipoUsuario;
+  rol: RolUsuario;
+}
+
+export interface Prestamo {
+  id: string; // código único del préstamo
+  usuarioId: string;
+  libroId: string;
+  fechaPrestamo: string; // ISO
+  fechaLimite: string; // ISO
+  fechaDevolucion?: string; // ISO, opcional
+  estado: EstadoPrestamo;
 }

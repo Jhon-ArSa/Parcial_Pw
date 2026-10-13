@@ -1,27 +1,21 @@
-// 🟡 Jefferson - Configuración de rutas
-import { NavigationItem } from '../types/app.types';
-import { ROUTES } from './constants';
+// 🟡 Jefferson
+export const ROUTES = {
+  HOME: "/",
+  LOGIN: "/login",
 
-export const navigationItems: NavigationItem[] = [
-  {
-    id: 'home',
-    label: 'Inicio',
-    path: ROUTES.HOME,
-    icon: 'home',
-  },
-  {
-    id: 'about',
-    label: 'Acerca de',
-    path: ROUTES.ABOUT,
-    icon: 'info',
-  },
-  {
-    id: 'dashboard',
-    label: 'Dashboard',
-    path: ROUTES.DASHBOARD,
-    icon: 'dashboard',
-  },
-];
+  // Admin
+  ADMIN_DASHBOARD: "/admin",
+  ADMIN_LIBROS: "/admin/libros",
+  ADMIN_CATEGORIAS: "/admin/categorias",
+  ADMIN_USUARIOS: "/admin/usuarios",
+  ADMIN_PRESTAMOS: "/admin/prestamos",
 
-export const publicRoutes = [ROUTES.HOME, ROUTES.ABOUT, ROUTES.LOGIN, ROUTES.REGISTER];
-export const privateRoutes = [ROUTES.DASHBOARD];
+  // Usuario
+  USER_DASHBOARD: "/usuario",
+  USER_BUSCAR: "/usuario/buscar",
+  USER_MIS_PRESTAMOS: "/usuario/prestamos",
+  USER_HISTORIAL: "/usuario/historial",
+  USER_COMPROBANTE: "/usuario/comprobante/:id",
+} as const;
+
+export type AppRoute = (typeof ROUTES)[keyof typeof ROUTES];
