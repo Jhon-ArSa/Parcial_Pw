@@ -1,5 +1,5 @@
-// 🟡 Jefferson - Constantes de la aplicación
-export const APP_NAME = 'Parcial App';
+// 🟡 Jefferson - Constantes de la aplicación - Biblioteca Virtual
+export const APP_NAME = 'Biblioteca Virtual';
 export const APP_VERSION = '1.0.0';
 
 export const API_CONFIG = {
@@ -18,6 +18,7 @@ export const STORAGE_KEYS = {
 
 export const ROUTES = {
   HOME: '/',
+  CATALOG: '/catalogo',
   ABOUT: '/about',
   DASHBOARD: '/dashboard',
   LOGIN: '/login',

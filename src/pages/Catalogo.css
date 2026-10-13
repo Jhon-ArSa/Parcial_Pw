@@ -1,0 +1,213 @@
+/* 🔵 John - Estilos Catálogo */
+.catalogo-page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.catalogo-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.catalogo-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  color: var(--color-text-primary);
+}
+
+.catalogo-subtitle {
+  color: #6b7280;
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Búsqueda y filtros */
+.search-filter-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.search-box {
+  margin-bottom: 1.5rem;
+}
+
+.category-filters {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.filter-btn {
+  padding: 0.5rem 1rem;
+  border: 2px solid #e5e7eb;
+  background: white;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  color: var(--color-text-secondary);
+}
+
+.filter-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.filter-btn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+/* Resultados */
+.results-info {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+/* Grid de libros */
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.book-cover {
+  font-size: 4rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.book-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  color: var(--color-text-primary);
+  line-height: 1.4;
+  min-height: 2.8em;
+}
+
+.book-author {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0 0 0.75rem;
+}
+
+.book-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.book-category {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  background: #eff6ff;
+  color: #2563eb;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.book-year {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.book-status {
+  margin-bottom: 1rem;
+}
+
+.status-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.status-badge.available {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.unavailable {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* No results */
+.no-results {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.no-results p {
+  margin-bottom: 1.5rem;
+  color: #6b7280;
+  font-size: 1.125rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .catalogo-page {
+    padding: 1rem;
+  }
+
+  .catalogo-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .search-filter-section {
+    padding: 1rem;
+  }
+
+  .books-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .filter-btn {
+    flex: 1 1 calc(50% - 0.375rem);
+    min-width: 100px;
+  }
+}
+
+/* Dark theme */
+[data-theme='dark'] .search-filter-section {
+  background: #1f2937;
+}
+
+[data-theme='dark'] .filter-btn {
+  background: #374151;
+  border-color: #4b5563;
+  color: #d1d5db;
+}
+
+[data-theme='dark'] .filter-btn:hover {
+  border-color: #3b82f6;
+  color: #93c5fd;
+}
+
+[data-theme='dark'] .book-meta {
+  border-color: #374151;
+}
+
+[data-theme='dark'] .book-category {
+  background: #1e3a8a;
+  color: #93c5fd;
+}
+
+[data-theme='dark'] .book-year {
+  color: #6b7280;
+}

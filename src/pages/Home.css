@@ -1,4 +1,4 @@
-/* 🔵 John - Estilos Home */
+/* 🔵 John - Estilos Home - Biblioteca Virtual */
 .home-page {
   max-width: 1280px;
   margin: 0 auto;
@@ -26,6 +26,19 @@
   color: #6b7280;
   margin: 0 0 2rem;
   animation: slideInRight 0.5s ease;
+}
+
+/* Buscador */
+.search-container {
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  display: flex;
+  gap: 1rem;
+  animation: fadeIn 0.5s ease 0.2s both;
+}
+
+.search-container .input-wrapper {
+  flex: 1;
 }
 
 .hero-actions {
@@ -73,6 +86,40 @@
   margin-right: 0.5rem;
 }
 
+/* Estadísticas */
+.stats-section {
+  padding: 3rem 0;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  border-radius: 16px;
+  margin-top: 3rem;
+}
+
+.stats-grid-home {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #646cff;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
 @media (max-width: 768px) {
   .home-page {
     padding: 1rem;
@@ -90,9 +137,23 @@
     font-size: 1rem;
   }
 
+  .search-container {
+    flex-direction: column;
+  }
+
   .features-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
+  }
+
+  .stats-grid-home {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .stat-number {
+    font-size: 1.75rem;
   }
 }
 
@@ -102,5 +163,13 @@
 }
 
 [data-theme='dark'] .feature-list li {
+  color: #9ca3af;
+}
+
+[data-theme='dark'] .stats-section {
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+}
+
+[data-theme='dark'] .stat-label {
   color: #9ca3af;
 }

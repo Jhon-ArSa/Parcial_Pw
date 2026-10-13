@@ -1,4 +1,4 @@
-// 🔵 John - App Principal
+// 🔵 John - App Principal - Biblioteca Virtual
 import { useState } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
@@ -7,6 +7,7 @@ import { MainLayout } from './components/layout/MainLayout';
 import { Home } from './pages/Home';
 import { About } from './pages/About';
 import { Dashboard } from './pages/Dashboard';
+import { Catalogo } from './pages/Catalogo';
 import { NotFound } from './pages/NotFound';
 import './App.css';
 
@@ -32,6 +33,8 @@ function App() {
     switch (currentPage) {
       case '/':
         return <Home />;
+      case '/catalogo':
+        return <Catalogo />;
       case '/about':
         return <About />;
       case '/dashboard':

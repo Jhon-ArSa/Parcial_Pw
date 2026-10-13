@@ -1,4 +1,4 @@
-// 🔵 John - Componente Header
+// 🔵 John - Componente Header - Biblioteca Virtual
 import './Header.css';
 
 interface HeaderProps {
@@ -6,7 +6,7 @@ interface HeaderProps {
   onMenuClick?: () => void;
 }
 
-export const Header = ({ title = 'Parcial App', onMenuClick }: HeaderProps) => {
+export const Header = ({ title = 'Biblioteca Virtual', onMenuClick }: HeaderProps) => {
   return (
     <header className="header">
       <div className="header-container">

@@ -1,4 +1,4 @@
-/* 🔵 John - Estilos Dashboard */
+/* 🔵 John - Estilos Dashboard - Biblioteca Virtual */
 .dashboard-page {
   max-width: 1280px;
   margin: 0 auto;
@@ -87,6 +87,15 @@
   color: var(--color-text-secondary);
 }
 
+.book-category-mini {
+  font-size: 0.65rem;
+  padding: 0.25rem 0.5rem;
+  background: #eff6ff;
+  color: #2563eb;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
 /* Accesos Rápidos */
 .quick-actions {
   display: grid;
@@ -160,4 +169,9 @@
 
 [data-theme='dark'] .quick-action-btn {
   background: #374151;
+}
+
+[data-theme='dark'] .book-category-mini {
+  background: #1e3a8a;
+  color: #93c5fd;
 }
