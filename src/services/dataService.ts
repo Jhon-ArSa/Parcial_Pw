@@ -1,9 +1,13 @@
 // 🟡 Jefferson - Servicio de datos genérico
 import { apiService } from './api';
-import { PaginatedResponse } from '../types/api.types';
+import type { PaginatedResponse } from '../types/api.types';
 
 export class DataService<T> {
-  constructor(private endpoint: string) {}
+  private endpoint: string;
+
+  constructor(endpoint: string) {
+    this.endpoint = endpoint;
+  }
 
   async getAll(page?: number, pageSize?: number): Promise<T[] | PaginatedResponse<T>> {
     if (page !== undefined && pageSize !== undefined) {

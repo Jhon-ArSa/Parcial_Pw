@@ -1,5 +1,5 @@
 // 🟢 Gabriel - Contexto de tema
-import { createContext, useContext, ReactNode, useEffect } from 'react';
+import { createContext, useContext, type ReactNode, useEffect } from 'react';
 import { Theme } from '../types/app.types';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { STORAGE_KEYS } from '../config/constants';

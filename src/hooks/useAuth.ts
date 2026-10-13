@@ -1,6 +1,6 @@
 // 🟢 Gabriel - Hook de autenticación
 import { useState, useEffect } from 'react';
-import { User } from '../types/user.types';
+import type { User } from '../types/user.types';
 import { authService } from '../services/authService';
 
 interface UseAuthReturn {

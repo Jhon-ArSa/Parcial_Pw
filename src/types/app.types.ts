@@ -5,11 +5,13 @@ export interface AppState {
   theme: Theme;
 }
 
-export enum Theme {
-  LIGHT = 'light',
-  DARK = 'dark',
-  AUTO = 'auto',
-}
+export type Theme = 'light' | 'dark' | 'auto';
+
+export const Theme = {
+  LIGHT: 'light' as const,
+  DARK: 'dark' as const,
+  AUTO: 'auto' as const,
+};
 
 export interface NavigationItem {
   id: string;

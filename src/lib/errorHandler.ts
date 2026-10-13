@@ -1,14 +1,19 @@
 // 🟡 Jefferson - Manejo centralizado de errores
-import { ApiError } from '../types/api.types';
+import type { ApiError } from '../types/api.types';
 
 export class AppError extends Error {
+  code?: string;
+  statusCode?: number;
+  
   constructor(
-    public message: string,
-    public code?: string,
-    public statusCode?: number
+    message: string,
+    code?: string,
+    statusCode?: number
   ) {
     super(message);
     this.name = 'AppError';
+    this.code = code;
+    this.statusCode = statusCode;
   }
 }
 

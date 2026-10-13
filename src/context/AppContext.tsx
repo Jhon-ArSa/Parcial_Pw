@@ -1,6 +1,7 @@
 // 🟢 Gabriel - Contexto general de la aplicación
-import { createContext, useContext, ReactNode, useState } from 'react';
-import { AppState } from '../types/app.types';
+import { createContext, useContext, type ReactNode, useState } from 'react';
+import type { AppState } from '../types/app.types';
+import { Theme } from '../types/app.types';
 
 interface AppContextType extends AppState {
   setLoading: (isLoading: boolean) => void;
@@ -13,7 +14,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [state, setState] = useState<AppState>({
     isLoading: false,
     error: null,
-    theme: 'light' as const,
+    theme: Theme.LIGHT,
   });
 
   const setLoading = (isLoading: boolean) => {

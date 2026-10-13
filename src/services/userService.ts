@@ -1,7 +1,7 @@
 // 🟡 Jefferson - Servicio de usuarios
 import { apiService } from './api';
-import { User, UserProfile } from '../types/user.types';
-import { PaginatedResponse } from '../types/api.types';
+import type { User, UserProfile } from '../types/user.types';
+import type { PaginatedResponse } from '../types/api.types';
 
 export class UserService {
   async getUsers(page: number = 1, pageSize: number = 10): Promise<PaginatedResponse<User>> {

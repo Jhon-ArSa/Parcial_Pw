@@ -1,5 +1,5 @@
 // 🟢 Gabriel - Hook para manejo de formularios
-import { useState, ChangeEvent, FormEvent } from 'react';
+import { useState, type ChangeEvent, type FormEvent } from 'react';
 
 interface ValidationRules<T> {
   [key: string]: (value: T[keyof T]) => string | undefined;

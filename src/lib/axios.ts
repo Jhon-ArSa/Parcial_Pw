@@ -1,5 +1,5 @@
 // 🟡 Jefferson - Configuración de Axios
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios';
 import { API_CONFIG, STORAGE_KEYS } from '../config/constants';
 
 const axiosInstance: AxiosInstance = axios.create({

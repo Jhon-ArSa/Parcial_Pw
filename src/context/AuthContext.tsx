@@ -1,6 +1,6 @@
 // 🟢 Gabriel - Contexto de autenticación
-import { createContext, useContext, ReactNode } from 'react';
-import { User } from '../types/user.types';
+import { createContext, useContext, type ReactNode } from 'react';
+import type { User } from '../types/user.types';
 import { useAuth } from '../hooks/useAuth';
 
 interface AuthContextType {

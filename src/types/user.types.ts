@@ -9,11 +9,13 @@ export interface User {
   updatedAt: Date;
 }
 
-export enum UserRole {
-  ADMIN = 'admin',
-  USER = 'user',
-  GUEST = 'guest',
-}
+export type UserRole = 'admin' | 'user' | 'guest';
+
+export const UserRole = {
+  ADMIN: 'admin' as const,
+  USER: 'user' as const,
+  GUEST: 'guest' as const,
+};
 
 export interface UserProfile extends User {
   bio?: string;

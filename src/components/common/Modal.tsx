@@ -1,5 +1,5 @@
 // 🔵 John - Componente Modal
-import { ReactNode, useEffect } from 'react';
+import { type ReactNode, useEffect } from 'react';
 import './Modal.css';
 
 interface ModalProps {

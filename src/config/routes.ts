@@ -1,5 +1,5 @@
 // 🟡 Jefferson - Configuración de rutas
-import { NavigationItem } from '../types/app.types';
+import type { NavigationItem } from '../types/app.types';
 import { ROUTES } from './constants';
 
 export const navigationItems: NavigationItem[] = [

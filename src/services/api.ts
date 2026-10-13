@@ -1,6 +1,6 @@
 // 🟡 Jefferson - Servicio base de API
 import axiosInstance from '../lib/axios';
-import { ApiResponse, PaginatedResponse } from '../types/api.types';
+import type { ApiResponse, PaginatedResponse } from '../types/api.types';
 import { handleApiError, logError } from '../lib/errorHandler';
 
 export class ApiService {

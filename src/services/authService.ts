@@ -1,6 +1,6 @@
 // 🟡 Jefferson - Servicio de autenticación
 import { apiService } from './api';
-import { AuthUser, User } from '../types/user.types';
+import type { AuthUser, User } from '../types/user.types';
 import { STORAGE_KEYS } from '../config/constants';
 
 interface LoginCredentials {

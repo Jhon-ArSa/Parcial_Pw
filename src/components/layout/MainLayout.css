@@ -1,0 +1,40 @@
+/* 🔵 John - Estilos MainLayout */
+.main-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f9fafb;
+}
+
+.main-layout-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-left: 280px;
+  transition: margin-left 0.3s ease;
+}
+
+.main-layout-body {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .main-layout-content {
+    margin-left: 0;
+  }
+
+  .main-layout-body {
+    padding: 1rem;
+  }
+}
+
+/* Dark theme */
+[data-theme='dark'] .main-layout {
+  background: #111827;
+}
+
+[data-theme='dark'] .main-layout-body {
+  color: #f9fafb;
+}
